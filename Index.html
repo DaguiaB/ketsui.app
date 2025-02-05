@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu App</title>
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+</head>
+<body>
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Usuário">
+    <input type="password" id="password" placeholder="Senha">
+    <button onclick="login()">Entrar</button>
+
+    <h2>Chat</h2>
+    <input type="text" id="mensagem" placeholder="Digite sua mensagem">
+    <button onclick="enviarMensagem()">Enviar</button>
+    <div id="chat"></div>
+
+    <script>
+        const socket = io("https://seu-backend-no-render.com");
+
+        function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            fetch("https://seu-backend-no-render.com/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password }),
+            })
+            .then(res => res.json())
+            .then(data => alert(data.message))
+            .catch(err => console.error(err));
+        }
+
+        function enviarMensagem() {
+            const msg = document.getElementById("mensagem").value;
+            socket.emit("mensagem", msg);
+        }
+
+        socket.on("mensagem", (msg) => {
+            document.getElementById("chat").innerHTML += `<p>${msg}</p>`;
+        });
+    </script>
+</body>
+</html>
